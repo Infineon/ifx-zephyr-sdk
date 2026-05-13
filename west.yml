@@ -1,0 +1,33 @@
+# Copyright (c) 2026 Infineon Technologies AG,
+# or an affiliate of Infineon Technologies AG.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+manifest:
+  self:
+    west-commands: scripts/west-commands.yml
+
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://gitlab.intra.infineon.com/software-integration/zephyrproject-rtos
+    - name: lvgl
+      url-base: https://github.com/lvgl
+
+  projects:
+    - name: ifx-zephyr
+      remote: zephyrproject-rtos
+      revision: IFX_develop
+      clone-depth: 1
+      import:
+        # By using name-allowlist we can clone only the modules that are
+        # strictly needed by the application.
+        name-allowlist:
+          - cmsis_6
+          - hal_infineon
+          - mbedtls
+          - trusted-firmware-m
+          - zcbor
+    - name: lvgl
+      remote: lvgl
+      revision: 92708ebbbb88fed2db15dfe9324f0dc546222301
+      path: modules/lib/gui/lvgl
