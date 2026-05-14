@@ -9,14 +9,14 @@ manifest:
 
   remotes:
     - name: zephyrproject-rtos
-      url-base: https://gitlab.intra.infineon.com/software-integration/zephyrproject-rtos
+      url-base: https://github.com/Infineon
     - name: lvgl
       url-base: https://github.com/lvgl
 
   projects:
     - name: ifx-zephyr
       remote: zephyrproject-rtos
-      revision: IFX_develop
+      revision: 26435671ba3a40cd54a053cf08756f7876bc0032
       clone-depth: 1
       import:
         # By using name-allowlist we can clone only the modules that are
