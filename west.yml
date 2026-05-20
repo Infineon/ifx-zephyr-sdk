@@ -16,7 +16,7 @@ manifest:
   projects:
     - name: ifx-zephyr
       remote: zephyrproject-rtos
-      revision: 26435671ba3a40cd54a053cf08756f7876bc0032
+      revision: main
       clone-depth: 1
       import:
         # By using name-allowlist we can clone only the modules that are

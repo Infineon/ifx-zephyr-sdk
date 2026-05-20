@@ -1,6 +1,6 @@
 # Infineon Zephyr SDK
 
-## Set up the Infineon downstream environment:
+## Set up the Infineon Downstream Environment
 ```
 example-zephyr-environment/
 ├── .venv
@@ -28,7 +28,6 @@ example-zephyr-environment/
 ```
 west init -l .
 west update
-west zephyr-export (not sure if this is necessary)
 ```
 3. If you need to update your OpenOCD path (remember to rebuild after making this change):
 ```
@@ -40,3 +39,8 @@ west config build.cmake-args -- -DOPENOCD=path/to/infineon/openocd/bin/openocd.e
 west build -p -b kit_pse84_eval/pse846gps2dbzc4a/m55 samples\subsys\display\lvgl --sysbuild
 west flash
 ```
+
+## Included Apps
+
+### lvgl-7in
+This is a clone of samples/subsys/display/lvgl but includes an overlay for the PSE84 Eval kit which uses the 7" waveshare display module instead of the standard 4.3" display module.

@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2026 Infineon Technologies AG,
+ * or an affiliate of Infineon Technologies AG.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/display/panel.h>
+
+/ {
+	chosen {
+		zephyr,touch = &gt911;
+		zephyr,display = &display_controller;
+	};
+
+	lvgl_pointer {
+		compatible = "zephyr,lvgl-pointer-input";
+		input = <&gt911>;
+	};
+
+	lvgl_vglite {
+		compatible = "zephyr,lvgl-gpu-vglite";
+		gpu = <&gcnano>;
+		variant = "gcnanoultrav";
+		revision = "0x1003";
+	};
+};
+
+&display_controller {
+	status = "okay";
+
+	width = <1024>;
+	height = <600>;
+
+	pixel-clock-khz = <41743>;
+	hsync-width = <100>;
+	hfp = <125>;
+	hbp = <20>;
+	vsync-width = <5>;
+	vfp = <20>;
+	vbp = <20>;
+
+	data-lanes = <2>;
+	per-lane-mbps = <500>;
+
+	input-pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
+	panel = <&display_panel>;
+};
+
+&gcnano {
+	status = "okay";
+};
+
+i2c0: &scb0 {
+	compatible = "infineon,i2c";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	clocks = <&peri0_group1_16bit_1>;
+
+	pinctrl-0 = <&p8_0_scb0_i2c_scl &p8_1_scb0_i2c_sda>;
+	pinctrl-names = "default";
+
+	gt911: gt911@14 {
+		compatible = "goodix,gt911";
+		reg = <0x14>;
+	};
+
+	display_panel: waveshare_panel@45 {
+		compatible = "waveshare,7";
+		reg = <0x45>;
+		pixel-format = <PANEL_PIXEL_FORMAT_RGB_888>;
+		status = "okay";
+		height = <600>;
+		width = <1024>;
+	};
+};
+
+&peri0_group1_16bit_1 {
+	status = "okay";
+	clock-div = <62>;
+};
+
+&p8_0_scb0_i2c_scl {
+	drive-open-drain;
+	input-enable;
+};
+
+&p8_1_scb0_i2c_sda {
+	drive-open-drain;
+	input-enable;
+};
+
+&clk_hf12 {
+	status = "okay";
+	clock-div = <IFX_CLK_HF_DIVIDE_BY_2>;
+	source-path = <IFX_CLK_HF_IN_CLKPATH3>;
+};
