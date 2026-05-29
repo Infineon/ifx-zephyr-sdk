@@ -1,0 +1,20 @@
+# Copyright (c) 2026 Infineon Technologies AG
+# SPDX-License-Identifier: Apache-2.0
+
+# Allow Vela-compiled model blobs (needed for Ethos-U NPU inference)
+config TAINT_BLOBS_TFLM
+	bool
+	default y
+	select TAINT_BLOBS
+
+config TAINT_BLOBS_TFLM_ETHOSU
+	bool "Use Vela-compiled model targeting Ethos-U NPU"
+	default y
+	select TAINT_BLOBS_TFLM
+	help
+	  Enable to use a Vela-optimized TFLite model that targets the
+	  Arm Ethos-U55 NPU via the Infineon ML Middleware integration.
+	  The DEEPCRAFT-generated model.c contains a Vela-compiled flatbuffer
+	  that is dispatched to the NPU via the TFLite EthosuDelegate.
+
+source "Kconfig.zephyr"
