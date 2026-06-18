@@ -90,9 +90,9 @@ manifest:
     - name: audio-front-end
       remote: infineon-github
       revision: release-v1.0.2
-      path: modules/lib/third_party/audio-front-end
+      path: modules/lib/ifx-audio-front-end/audio-front-end
 
     - name: audio-voice-core
       remote: infineon-github
       revision: release-v2.0.0
-      path: modules/lib/third_party/audio-voice-core
+      path: modules/lib/ifx-audio-voice-core/audio-voice-core
