@@ -1,0 +1,50 @@
+config AUDIOFE
+	bool "Infineon Audio Front-End (AFE) Library"
+	help
+	  Enable the Infineon Audio Front-End middleware library.
+
+if AUDIOFE
+
+config AUDIOFE_SPEECH_ENH
+	bool "Enable Speech Enhancement Support"
+	default n
+	help
+	  Enable speech enhancement paths that depend on Audio Voice Core.
+	  Default is disabled for basic mode integration.
+
+config AUDIOFE_LOGGING
+	bool "Enable AFE Logging Support"
+	default n
+	help
+	  Enable additional AFE logging support.
+
+config AUDIOFE_TUNING
+	bool "Enable AFE Tuning Feature"
+	default n
+	help
+	  Enable AFE tuning interfaces for runtime parameter updates.
+
+config AUDIOFE_DEBUG
+	bool "Enable AFE Debug Features"
+	default n
+	help
+	  Enable debug features and extra diagnostics.
+
+choice AUDIOFE_BUILD_MODE
+	prompt "AFE Build Mode"
+	default AUDIOFE_BASIC_ONLY
+
+config AUDIOFE_BASIC_ONLY
+	bool "Basic AFE only"
+	help
+	  Build basic AFE functionality with compatibility stubs.
+
+config AUDIOFE_FULL_BUILD
+	bool "Full AFE build"
+	depends on AUDIOFE_SPEECH_ENH
+	help
+	  Build full AFE functionality including speech enhancement.
+
+endchoice
+
+endif # AUDIOFE

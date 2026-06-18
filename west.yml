@@ -11,6 +11,9 @@ manifest:
     - name: infineon-github
       url-base: https://github.com/Infineon
 
+    - name: infineon-gitlab
+      url-base: https://gitlab.intra.infineon.com/software-integration/zephyrproject-rtos
+
     - name: lvgl
       url-base: https://github.com/lvgl
 
@@ -64,3 +67,32 @@ manifest:
       path: modules/hal/infineon
       groups:
         - hal
+
+    # -----------------------------------------------------------------------
+    # Audio Front-End and Audio Voice Core Zephyr glue modules.
+    # These come from the same repository, but different branches.
+    # -----------------------------------------------------------------------
+    - name: ifx-zephyr-lib-afe
+      remote: infineon-gitlab
+      repo-path: ifx-zephyr-lib
+      revision: audio-front-end
+      path: modules/lib/ifx-audio-front-end
+
+    - name: ifx-zephyr-lib-avc
+      remote: infineon-gitlab
+      repo-path: ifx-zephyr-lib
+      revision: audio-voice-core
+      path: modules/lib/ifx-audio-voice-core
+
+    # -----------------------------------------------------------------------
+    # Upstream audio assets consumed by the glue modules.
+    # -----------------------------------------------------------------------
+    - name: audio-front-end
+      remote: infineon-github
+      revision: release-v1.0.2
+      path: modules/lib/third_party/audio-front-end
+
+    - name: audio-voice-core
+      remote: infineon-github
+      revision: release-v2.0.0
+      path: modules/lib/third_party/audio-voice-core
