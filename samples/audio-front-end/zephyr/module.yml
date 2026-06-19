@@ -1,4 +1,0 @@
-name: audiofe
-build:
-  cmake: zephyr
-  kconfig: zephyr/Kconfig

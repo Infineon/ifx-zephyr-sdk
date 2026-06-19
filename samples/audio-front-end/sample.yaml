@@ -1,0 +1,25 @@
+sample:
+  name: AFE Sample
+tests:
+  sample.boards.infineon.kit_pse84_ai.afe.led_thread_m33:
+    tags:
+      - LED
+      - gpio
+      - threads
+      - audio_front_end
+    filter: dt_enabled_alias_with_parent_compat("led0", "gpio-leds")
+    depends_on: gpio
+    harness: led
+    platforms_allow:
+      - kit_pse84_ai/pse846gps2dbzc4a/m33
+  sample.boards.infineon.kit_pse84_ai.afe.led_thread_m55:
+    tags:
+      - LED
+      - gpio
+      - threads
+      - audio_front_end
+    filter: dt_enabled_alias_with_parent_compat("led0", "gpio-leds")
+    depends_on: gpio
+    harness: led
+    platforms_allow:
+      - kit_pse84_ai/pse846gps2dbzc4a/m55
