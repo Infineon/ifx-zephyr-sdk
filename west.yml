@@ -14,6 +14,9 @@ manifest:
     - name: infineon-gitlab
       url-base: https://gitlab.intra.infineon.com/software-integration/zephyrproject-rtos
 
+    - name: cypress-github
+      url-base: https://github.com/cypresssemiconductorco
+
     - name: lvgl
       url-base: https://github.com/lvgl
 
@@ -83,6 +86,22 @@ manifest:
       repo-path: ifx-zephyr-lib
       revision: audio-voice-core
       path: modules/lib/ifx-audio-voice-core
+
+    # -----------------------------------------------------------------------
+    # Middleware Utilities — Logging, result codes, and common utilities.
+    # Zephyr glue module and upstream asset.
+    # -----------------------------------------------------------------------
+    - name: ifx-zephyr-lib-mwutils
+      remote: infineon-gitlab
+      repo-path: ifx-zephyr-lib
+      revision: connectivity-utilities
+      path: modules/lib/ifx-connectivity-utilities
+
+    - name: connectivity-utilities
+      remote: cypress-github
+      repo-path: connectivity-utilities
+      revision: release-v4.5.2
+      path: modules/lib/ifx-connectivity-utilities/connectivity-utilities
 
     # -----------------------------------------------------------------------
     # Upstream audio assets consumed by the glue modules.
