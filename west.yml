@@ -11,9 +11,6 @@ manifest:
     - name: infineon-github
       url-base: https://github.com/Infineon
 
-    - name: infineon-gitlab
-      url-base: https://gitlab.intra.infineon.com/software-integration/zephyrproject-rtos
-
     - name: cypress-github
       url-base: https://github.com/cypresssemiconductorco
 
@@ -76,13 +73,13 @@ manifest:
     # These come from the same repository, but different branches.
     # -----------------------------------------------------------------------
     - name: ifx-zephyr-lib-afe
-      remote: infineon-gitlab
+      remote: infineon-github
       repo-path: ifx-zephyr-lib
       revision: audio-front-end
       path: modules/lib/ifx-audio-front-end
 
     - name: ifx-zephyr-lib-avc
-      remote: infineon-gitlab
+      remote: infineon-github
       repo-path: ifx-zephyr-lib
       revision: audio-voice-core
       path: modules/lib/ifx-audio-voice-core
@@ -92,7 +89,7 @@ manifest:
     # Zephyr glue module and upstream asset.
     # -----------------------------------------------------------------------
     - name: ifx-zephyr-lib-mwutils
-      remote: infineon-gitlab
+      remote: infineon-github
       repo-path: ifx-zephyr-lib
       revision: connectivity-utilities
       path: modules/lib/ifx-connectivity-utilities
