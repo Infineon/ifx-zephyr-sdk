@@ -37,22 +37,34 @@ manifest:
     # Infineon ML Middleware — MTB-style mtb_ml_* API + NNLite / Ethos-U55
     # backend glue.
     # -----------------------------------------------------------------------
+    - name: ifx-zephyr-lib-ml-middleware
+      remote: infineon-gitlab
+      repo-path: ifx-zephyr-lib
+      revision: ml-middleware
+      path: modules/lib/ml-middleware
+
     - name: mtb-ml-middleware
       remote: infineon-github
       repo-path: ml-middleware
       revision: release-v3.2.0
-      path: modules/hal/infineon/ml-middleware/mtb-ml-middleware
+      path: modules/lib/ml-middleware/mtb-ml-middleware
 
     # -----------------------------------------------------------------------
     # Infineon ML TFLite Micro precompiled library.
     # Provides libtensorflow-microlite.a variants compiled per NPU target
     # (NNLite/NNLITE2, Ethos-U55).  Consumed by the ML Middleware CMakeLists.
     # -----------------------------------------------------------------------
+    - name: ifx-zephyr-lib-ml-tflite-micro
+      remote: infineon-gitlab
+      repo-path: ifx-zephyr-lib
+      revision: tflite-micro
+      path: modules/lib/ml-tflite-micro
+
     - name: mtb-ml-tflite-micro
       remote: infineon-github
       repo-path: ml-tflite-micro
       revision: release-v3.2.0
-      path: modules/hal/infineon/ml-tflite-micro/mtb-ml-tflite-micro
+      path: modules/lib/ml-tflite-micro/mtb-ml-tflite-micro
 
     # -----------------------------------------------------------------------
     # Downstream Hal Infineon with support for ML middleware.
