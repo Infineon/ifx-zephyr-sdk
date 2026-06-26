@@ -14,6 +14,9 @@ manifest:
     - name: lvgl
       url-base: https://github.com/lvgl
 
+    - name: tinyusb
+      url-base: https://github.com/hathach
+
   projects:
     - name: ifx-zephyr
       remote: infineon-github
@@ -64,3 +67,20 @@ manifest:
       path: modules/hal/infineon
       groups:
         - hal
+
+    # -----------------------------------------------------------------------
+    # TinyUSB Zephyr glue module.
+    # -----------------------------------------------------------------------
+    - name: ifx-zephyr-lib-tinyusb
+      remote: infineon-github
+      repo-path: ifx-zephyr-lib
+      revision: tinyusb
+      path: modules/lib/ifx-tinyusb
+
+    # -----------------------------------------------------------------------
+    # TinyUSB Zephyr glue module.
+    # -----------------------------------------------------------------------
+    - name: tinyusb
+      remote: tinyusb
+      revision: pull/3734/head
+      path: modules/lib/ifx-tinyusb/tinyusb

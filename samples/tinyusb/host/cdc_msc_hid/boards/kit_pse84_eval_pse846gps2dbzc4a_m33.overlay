@@ -1,0 +1,26 @@
+/*
+ * KIT_PSE84_EVAL USB Host (Type-A connector J27) control signals.
+ *
+ * USB_HOST_EN (P17[5]) gates the USB mux (U25) and the VBUS_HOST power switch
+ * (U21/U22). Driving it high switches the data lines to J27 and turns on the
+ * 5V host VBUS. USB_FAULT (P16[4], active-low) flags a host VBUS overcurrent.
+ *
+ * The PSE84 GPIO port controllers are disabled by default, so enable the ports
+ * used here and expose the pins to the BSP through the zephyr,user node.
+ */
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+&gpio_prt16 {
+	status = "okay";
+};
+
+&gpio_prt17 {
+	status = "okay";
+};
+
+/ {
+	zephyr,user {
+		host-en-gpios = <&gpio_prt17 5 GPIO_ACTIVE_HIGH>;
+		usb-fault-gpios = <&gpio_prt16 4 GPIO_ACTIVE_LOW>;
+	};
+};

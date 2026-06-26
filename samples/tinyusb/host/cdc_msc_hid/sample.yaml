@@ -1,0 +1,18 @@
+sample:
+  description: TinyUSB host CDC/MSC/HID example
+  name: tinyusb host cdc_msc_hid
+common:
+  tags:
+    - usb
+    - tinyusb
+    - host
+    - samples
+  modules:
+    - tinyusb
+tests:
+  sample.usb.tinyusb.host.cdc_msc_hid:
+    harness: none
+    platform_allow:
+      - kit_pse84_eval/pse846gps2dbzc4a/m33
+    integration_platforms:
+      - kit_pse84_eval/pse846gps2dbzc4a/m33
