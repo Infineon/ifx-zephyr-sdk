@@ -38,7 +38,7 @@ manifest:
     # backend glue.
     # -----------------------------------------------------------------------
     - name: ifx-zephyr-lib-ml-middleware
-      remote: infineon-gitlab
+      remote: infineon-github
       repo-path: ifx-zephyr-lib
       revision: ml-middleware
       path: modules/lib/ml-middleware
@@ -55,7 +55,7 @@ manifest:
     # (NNLite/NNLITE2, Ethos-U55).  Consumed by the ML Middleware CMakeLists.
     # -----------------------------------------------------------------------
     - name: ifx-zephyr-lib-ml-tflite-micro
-      remote: infineon-gitlab
+      remote: infineon-github
       repo-path: ifx-zephyr-lib
       revision: tflite-micro
       path: modules/lib/ml-tflite-micro
