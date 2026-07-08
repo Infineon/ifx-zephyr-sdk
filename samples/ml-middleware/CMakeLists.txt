@@ -6,16 +6,9 @@ cmake_minimum_required(VERSION 3.20.0)
 # their module.yml / Kconfig files regardless of which branch zephyr/west.yml
 # is on.  ZEPHYR_EXTRA_MODULES must be set before find_package(Zephyr).
 #
-# $ENV{ZEPHYR_BASE} is the zephyr repo root; the modules live one level up in
-# the west workspace (modules/hal/infineon/...).
-#
-# This is equivalent to the ml-middleware and ml-tflite-micro entries in the
-# topic branch's zephyr/west.yml and makes the sample buildable on zephyr/main
-# without any west.yml or workspace changes.
-list(APPEND ZEPHYR_EXTRA_MODULES
-  "$ENV{ZEPHYR_BASE}/../modules/hal/infineon/ml-middleware"
-  "$ENV{ZEPHYR_BASE}/../modules/hal/infineon/ml-tflite-micro"
-)
+# Note: The modules are already registered in the SDK's west.yml manifest
+# at modules/lib/ml-middleware and modules/lib/ml-tflite-micro, so they
+# should be automatically available via west's module discovery.
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(kit_pse84_ai_ml_demo)
