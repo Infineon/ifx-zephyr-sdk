@@ -25,61 +25,19 @@
  */
 
 #include "tusb.h"
-#include "bsp/board_api.h"
 #include "app.h"
-
-static size_t console_read(uint8_t *buf, size_t bufsize) {
-  size_t count = 0;
-  while (count < bufsize) {
-    const int ch = board_getchar();
-    if (ch < 0) {
-      break;
-    }
-    buf[count] = (uint8_t) ch;
-    count++;
-  }
-
-  return count;
-}
-
-static size_t console_write(const uint8_t *buf, size_t bufsize) {
-  // Use board_uart_write directly for non-blocking behavior.
-  // board_putchar -> sys_write has a blocking retry loop that causes UART RX overrun.
-  int wr = board_uart_write(buf, (int) bufsize);
-  return (wr > 0) ? (size_t) wr : 0;
-}
-
-// forward from console to usbh
-static void console_to_usbh(uint8_t idx) {
-  uint8_t buf[64];
-  size_t  count = console_read(buf, sizeof(buf));
-  if (count > 0) {
-    tuh_cdc_write(idx, buf, count);
-  }
-}
 
 void cdc_app_task(void) {
   const uint8_t idx = 0;
 
-  // Bidirectional forwarding: console <-> host cdc interfaces
   if (!tuh_cdc_mounted(idx)) {
     return;
   }
 
-  // usbh -> uart
-  uint8_t  buf[64];
-  uint32_t count = tuh_cdc_read(idx, buf, sizeof(buf));
-  uint32_t wr    = 0;
-
-  do {
-    // uart write is slow, while waiting forward uart -> usbh else uart rx can be overflow
-    if (count) {
-      wr += console_write(buf + wr, count - wr);
-    }
-    console_to_usbh(idx);
-  } while (wr < count);
-
-  tuh_cdc_write_flush(idx);
+  // Drain data from the device. This port has no console bridge, so the bytes
+  // are discarded; reading keeps the CDC RX pipe from stalling.
+  uint8_t buf[64];
+  tuh_cdc_read(idx, buf, sizeof(buf));
 }
 
 //--------------------------------------------------------------------+

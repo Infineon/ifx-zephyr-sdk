@@ -26,9 +26,14 @@
 #ifndef TUSB_TINYUSB_EXAMPLES_APP_H
 #define TUSB_TINYUSB_EXAMPLES_APP_H
 
+#include <stdbool.h>
 #include <stdio.h>
 
 void cdc_app_task(void);
 void hid_app_task(void);
+
+// Minimal board glue implemented in main.c
+void board_init(void);
+void board_led_write(bool state);
 
 #endif

@@ -6,7 +6,7 @@
  * 5V host VBUS. USB_FAULT (P16[4], active-low) flags a host VBUS overcurrent.
  *
  * The PSE84 GPIO port controllers are disabled by default, so enable the ports
- * used here and expose the pins to the BSP through the zephyr,user node.
+ * used here and expose the pins to main.c through the zephyr,user node.
  */
 #include <zephyr/dt-bindings/gpio/gpio.h>
 
