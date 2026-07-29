@@ -17,21 +17,36 @@ manifest:
   projects:
     - name: ifx-zephyr
       remote: infineon-github
-      revision: main
-      clone-depth: 1
+      repo-path: ifx-zephyr
+      revision: ac9878ff41c315f98562559498c388c0c17b0651
       import:
         # By using name-allowlist we can clone only the modules that are
         # strictly needed by the application.
         name-allowlist:
           - cmsis_6
+          - hal_infineon
           - mbedtls
-          - trusted-firmware-m
+          - mbedtls-3.6
+          - mcuboot
+          - tf-psa-crypto
           - zcbor
 
     - name: lvgl
       remote: lvgl
       revision: 92708ebbbb88fed2db15dfe9324f0dc546222301
       path: modules/lib/gui/lvgl
+
+    - name: trusted-firmware-m
+      remote: infineon-github
+      repo-path: ifx-zephyr-trusted-firmware-m
+      revision: 01fe3f388f70bc580a0180da2363ab5e62e6941e
+      path: modules/tee/tf-m/trusted-firmware-m
+
+    - name: hal_infineon
+      remote: infineon-github
+      repo-path: ifx-zephyr-hal_infineon
+      revision: e230fdd133dfe56307075573d86f2f8a14b71ec6
+      path: modules/hal/infineon
 
     # -----------------------------------------------------------------------
     # Infineon ML Middleware — MTB-style mtb_ml_* API + NNLite / Ethos-U55
@@ -53,14 +68,3 @@ manifest:
       repo-path: ml-tflite-micro
       revision: release-v3.2.0
       path: modules/hal/infineon/ml-tflite-micro/mtb-ml-tflite-micro
-
-    # -----------------------------------------------------------------------
-    # Downstream Hal Infineon with support for ML middleware.
-    # -----------------------------------------------------------------------
-    - name: hal_infineon
-      remote: infineon-github
-      repo-path: ifx-zephyr-hal_infineon
-      revision: master
-      path: modules/hal/infineon
-      groups:
-        - hal
