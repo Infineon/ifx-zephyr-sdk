@@ -18,12 +18,13 @@ manifest:
     - name: ifx-zephyr
       remote: infineon-github
       repo-path: ifx-zephyr
-      revision: ac9878ff41c315f98562559498c388c0c17b0651
+      revision: wip/2026-ww35
       import:
         # By using name-allowlist we can clone only the modules that are
         # strictly needed by the application.
         name-allowlist:
           - cmsis_6
+          - fatfs
           - hal_infineon
           - mbedtls
           - mbedtls-3.6
@@ -45,7 +46,7 @@ manifest:
     - name: hal_infineon
       remote: infineon-github
       repo-path: ifx-zephyr-hal_infineon
-      revision: e230fdd133dfe56307075573d86f2f8a14b71ec6
+      revision: wip/2026-ww35
       path: modules/hal/infineon
 
     # -----------------------------------------------------------------------
