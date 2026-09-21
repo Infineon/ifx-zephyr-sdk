@@ -1,0 +1,32 @@
+sample:
+  name: PSE84 emUSB-Device Vendor Bulk
+  description: >
+    Vendor-class bulk throughput sample on the SEGGER emUSB-Device stack
+    (Infineon pre-compiled library) for PSE84 USBHS. Producer mode streams a
+    counter pattern on bulk IN; loopback mode echoes OUT to IN. Ported from the
+    upstream Zephyr samples/subsys/usb/vendor_bulk (retargeted off Zephyr USB
+    onto emUSB).
+tests:
+  sample.usb.emusb.vendor_bulk:
+    platform_allow:
+      - kit_pse84_eval/pse846gps2dbzc4a/m33/ns
+      - kit_pse84_eval/pse846gps2dbzc4a/m55
+    integration_platforms:
+      - kit_pse84_eval/pse846gps2dbzc4a/m33/ns
+      - kit_pse84_eval/pse846gps2dbzc4a/m55
+    sysbuild: true
+    tags:
+      - usb
+      - emusb
+      - bulk
+      - infineon
+      - pse84
+    harness: console
+    harness_config:
+      type: one_line
+      regex:
+        - "PSE84 emUSB-Device: vendor bulk sample"
+    build_only: true
+common:
+  modules:
+    - hal_infineon

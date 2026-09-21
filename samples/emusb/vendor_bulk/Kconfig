@@ -1,0 +1,59 @@
+# Copyright (c) 2026 Infineon Technologies AG
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "emUSB vendor-class bulk sample"
+
+choice APP_VENDOR_BULK_MODE
+	prompt "Data path mode"
+	default APP_VENDOR_BULK_MODE_SOURCE
+	help
+	  Selects what the device does with the bulk endpoints. Match this to
+	  the host-side test direction (vendor_bulk_speed_test.py --mode):
+	    source   -> host --mode in
+	    sink     -> host --mode out
+	    loopback -> host --mode both
+
+config APP_VENDOR_BULK_MODE_SOURCE
+	bool "Source: stream a counter pattern on bulk IN"
+	help
+	  The device continuously generates a counter pattern and streams it on
+	  the bulk IN endpoint (measures device-to-host throughput).
+
+config APP_VENDOR_BULK_MODE_SINK
+	bool "Sink: drain and discard bulk OUT"
+	help
+	  The device continuously reads the bulk OUT endpoint and discards the
+	  data (measures host-to-device throughput). Nothing is sent on IN.
+
+config APP_VENDOR_BULK_MODE_LOOPBACK
+	bool "Loopback: echo bulk OUT back on bulk IN"
+	help
+	  The device reads the bulk OUT endpoint and echoes the data back on
+	  bulk IN (full-duplex; use the host --mode both test).
+
+endchoice
+
+config APP_VENDOR_BULK_XFER_SIZE
+	int "Per-transfer size (bytes)"
+	default 65536
+	range 64 131072
+	help
+	  Size of each bulk IN/OUT transfer. Should be a multiple of 512 (HS)
+	  for best throughput. Larger transfers reduce the number of
+	  transfer-boundary bubbles on the wire (each overlapped transfer keeps
+	  the DMA engine streaming longer), at the cost of more DMA-reachable
+	  RAM for the source/echo buffer.
+
+config APP_VENDOR_BULK_STATS
+	bool "Print device-side throughput statistics once per second"
+	default y
+	depends on APP_VENDOR_BULK_MODE_SOURCE || APP_VENDOR_BULK_MODE_SINK
+	help
+	  When enabled, the device reports its measured transfer rate (MiB/s)
+	  and transfers/second once per second. In source mode it also reports
+	  how often the overlapped write queue fully drained: a non-zero drain
+	  count means the endpoint went idle waiting for the worker to refill
+	  (a closable gap); near zero means the device is streaming at the
+	  driver/bus ceiling. Disable to rule out any observer effect on timing.
+
+source "Kconfig.zephyr"
