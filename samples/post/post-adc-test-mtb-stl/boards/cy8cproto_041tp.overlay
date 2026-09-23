@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 2025 Infineon Technologies AG,
+ * or an affiliate of Infineon Technologies AG.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/adc/adc.h>
+#include <zephyr/dt-bindings/adc/infineon-sar.h>
+#include <zephyr/dt-bindings/pinctrl/ifx_cat1-pinctrl.h>
+
+&pinctrl {
+	p2_0_adc: p2_0_adc {
+		pinmux = <DT_CAT1_PINMUX(2, 0, HSIOM_SEL_GPIO)>;
+	};
+};
+
+/* The clock initializes at boot: 48 MHz / 30 = 1.6 MHz for the SAR test. */
+&peri_clk_div4 {
+	status = "okay";
+	clock-div = <30>;
+};
+
+&adc0 {
+	status = "okay";
+	/* Start the normal SAR driver only after PASS and cleanup. */
+	zephyr,deferred-init;
+	clocks = <&peri_clk_div4>;
+	pinctrl-0 = <&p2_0_adc>;
+	pinctrl-names = "default";
+	vref-src = "vdda";
+	vref-mv = <5000>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_VDD_1";
+		zephyr,input-positive = <CY_SAR_ADDR_SARMUX_0>;
+		zephyr,resolution = <12>;
+		zephyr,oversampling = <0>;
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+	};
+};
+
+/ {
+	zephyr,user {
+		io-channels = <&adc0 0>;  /* Reference ADC0, channel 0 */
+	};
+
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		analog_test: adc_sar_vref_test{
+			adc = <&adc0>;
+			adc-vref-sel = <7>;
+			adc-neg-sel = <0>;
+			adc-neg-vref = <0>;
+			adc-power = <1>;
+			adc-sub-resolution = <0>;
+			adc-eos-en;
+			adc-sample-time0 = <3>;
+			adc-sample-time1 = <3>;
+			adc-sample-time2 = <3>;
+			adc-sample-time3 = <3>;
+			adc-chan-en = <1>;
+			adc-trig-mode = <0>;
+			adc-range-cond = <0>;
+			adc-avg-cnt = <0>;
+			adc-avg-shift;
+			adc-sample-time-sel-ch = <0>;
+			adc-sar-mux-switch-msk = <1>;
+			adc-sar-mux-switch-hw-ctrl-msk = <1>;
+		};
+	};
+};

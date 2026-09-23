@@ -1,0 +1,45 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/adc/adc.h>
+
+&hppass_analog0 {
+	trig-in-1-type = <3>;
+};
+
+&adc0 {
+	status = "okay";
+	ref-internal-source;
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@d {
+		reg = <13>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+		zephyr,input-positive = <13>;
+	};
+};
+
+/ {
+	zephyr,user {
+		io-channels = <&adc0 13>;
+	};
+
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		analog_test: adc_hppass_test {
+			adc = <&adc0>;
+			csg = <&csg0>;
+			dac-slice = <0>;
+		};
+	};
+};
