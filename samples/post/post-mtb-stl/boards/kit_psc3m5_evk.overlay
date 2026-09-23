@@ -1,0 +1,93 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+&sram0 {
+	reg = <0x34000000 0xfe00>;
+};
+
+&peri0_group5_16bit_2 {
+	status = "okay";
+	clock-div = <1>;
+};
+
+&tcpwm0_1 {
+	status = "okay";
+};
+
+&counter0_1 {
+	status = "okay";
+	clocks = <&peri0_group5_16bit_2>;
+};
+
+&peri0_group5_8bit_0 {
+	status = "okay";
+	clock-div = <1>;
+};
+
+&tcpwm0_0 {
+	status = "okay";
+};
+
+&counter0_0 {
+	status = "okay";
+	clocks = <&peri0_group5_8bit_0>;
+};
+
+/ {
+	post_ram_save: memory@3400fe00 {
+		compatible = "mmio-sram";
+		reg = <0x3400fe00 0x200>;
+	};
+
+	post_ram: memory@34002000 {
+		compatible = "mmio-sram";
+		reg = <0x34002000 0xde00>;
+	};
+
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		cpu_pc_test: cpu-pc-test {
+			pc5555-address = <0x12015554>;
+			pcaaaa-address = <0x1201aaa8>;
+		};
+
+		ram_test: ram-test {
+			ram-region = <&post_ram>;
+			ram-save-region = <&post_ram_save>;
+		};
+
+		gpio_test: gpio-test {
+			gpio-port-masks = [00 00 00 03];
+		};
+
+		interrupt_test: tcpwm_intr_test {
+			tcpwm = <&counter0_1>;
+			tcpwm-period = <9600>;
+			tcpwm-compare0 = <16384>;
+			tcpwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <1>;
+		};
+
+		clock_test: tcpwm_clk_test {
+			tcpwm = <&counter0_0>;
+			tcpwm-period = <35000>;
+			tcpwm-compare0 = <35000>;
+			tcpwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <1>;
+			wdt-ignore-bits = <0>;
+		};
+
+		dma_test: dma_test {
+			dma-channel = <0>;
+			dma-preemptable;
+		};
+	};
+};

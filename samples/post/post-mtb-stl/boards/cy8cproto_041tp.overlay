@@ -1,0 +1,123 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * MTB-STL POST overlay for CY8CPROTO-041TP
+ */
+
+&sram0 {
+	reg = <0x20000000 0x7e00>;
+};
+
+/*
+ * Clock dividers for TCPWM test peripherals
+ */
+
+&peri_clk_div4 {
+	status = "okay";
+	clock-div = <4>;
+	/* Interrupt test: divider 4 -> TCPWM counter 1 */
+};
+
+&peri_clk_div5 {
+	status = "okay";
+	clock-div = <1>;
+	/* Clock test: divider 5 -> TCPWM counter 0, full 48 MHz */
+};
+
+/*
+ * Enable TCPWM instances and assign clock dividers
+ */
+
+&tcpwm0_0 {
+	status = "okay";
+};
+
+&counter0_0 {
+	status = "okay";
+	clocks = <&peri_clk_div5>;
+};
+
+&tcpwm0_1 {
+	status = "okay";
+};
+
+&counter0_1 {
+	status = "okay";
+	clocks = <&peri_clk_div4>;
+};
+
+/ {
+	post_ram_save: memory@20007e00 {
+		compatible = "mmio-sram";
+		reg = <0x20007e00 0x200>;
+	};
+
+	post_ram: memory@20002000 {
+		compatible = "mmio-sram";
+		reg = <0x20002000 0x5e00>;
+	};
+
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		cpu_pc_test: cpu-pc-test {
+			pc5555-address = <0x00005554>;
+			pcaaaa-address = <0x0000aaa8>;
+		};
+
+		ram_test: ram-test {
+			ram-region = <&post_ram>;
+			ram-save-region = <&post_ram_save>;
+		};
+
+		gpio_test: gpio-test {
+			gpio-port-masks = [00 00 00 03];
+		};
+
+		/* DMA test */
+		dma_test: dma_test {
+			dma-channel = <0>;
+		};
+
+		/*
+		 * Interrupt test: TCPWM counter 1 generates periodic interrupts.
+		 * Verifies ISR fires at expected frequency.
+		 *
+		 * Clock: counter0_1 -> peri_clk_div4 (assigned above)
+		 * IRQ: inherited from parent tcpwm0_1 (IRQ 17)
+		 */
+		interrupt_test: tcpwm_intr_test {
+			tcpwm = <&counter0_1>;
+			tcpwm-period = <1000>;
+			tcpwm-compare0 = <16384>;
+			tcpwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <1>;
+		};
+
+		/*
+		 * Clock accuracy test: TCPWM counter 0 at full 48 MHz,
+		 * cross-checked against ILO/WDT.
+		 *
+		 * Clock: counter0_0 -> peri_clk_div5 (assigned on counter node above)
+		 * IRQ: inherited from parent tcpwm0_0 (IRQ 16)
+		 *
+		 * wdt-ignore-bits: Controls WDT match period for cross-check.
+		 *   Higher values -> coarser WDT period -> wider tolerance.
+		 *   3 = ignore lower 3 bits of WDT counter.
+		 */
+		clock_test: tcpwm_clk_test {
+			tcpwm = <&counter0_0>;
+			tcpwm-period = <48000>;
+			tcpwm-compare0 = <16384>;
+			tcpwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <1>;
+			wdt-ignore-bits = <3>;
+		};
+	};
+};
