@@ -1,0 +1,100 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+&tcpwm0_1 {
+	status = "okay";
+};
+
+&peri0_group5_8bit_0 {
+	status = "okay";
+	clock-div = <1>;
+};
+
+&tcpwm0_2 {
+	status = "okay";
+};
+
+&counter0_2 {
+	status = "okay";
+	clocks = <&peri0_group5_8bit_0>;
+};
+
+&peri0_group5_16bit_0 {
+	status = "okay";
+	clock-div = <1>;
+};
+
+&tcpwm1_4 {
+	status = "okay";
+};
+
+&pwm1_4 {
+	status = "okay";
+	clocks = <&peri0_group5_16bit_0>;
+	pinctrl-0 = <&p4_0_pwm1_4>;
+	pinctrl-names = "default";
+};
+
+&p4_0_pwm1_4 {
+	drive-push-pull;
+};
+
+&peri0_group5_16bit_1 {
+	status = "okay";
+	clock-div = <1>;
+};
+
+&tcpwm1_5 {
+	status = "okay";
+};
+
+&pwm1_5 {
+	status = "okay";
+	clocks = <&peri0_group5_16bit_1>;
+	pinctrl-0 = <&p4_2_pwm1_5>;
+	pinctrl-names = "default";
+};
+
+&p4_2_pwm1_5 {
+	drive-push-pull;
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		counter_test: tcpwm_cnt_test {
+			tcpwm = <&counter0_2>;
+			tcpwm-period = <65535>;
+			tcpwm-compare0 = <50000>;
+			tcpwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <2>;
+		};
+
+		pwm_gatekill_test: tcpwm_pwm_gk_test {
+			tcpwm = <&pwm1_4>;
+		};
+
+		pwm_test: tcpwm_pwm_test {
+			tcpwm = <&pwm1_5>;
+			pwm-mode = <4>;
+			tcpwm-clock-prescaler = <2>;
+			pwm-alignment = <0>;
+			tcpwm-run-mode = <0>;
+			pwm-period0 = <32768>;
+			pwm-period1 = <32768>;
+			pwm-compare0 = <16384>;
+			pwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <1>;
+			pwm-kill-mode = <2>;
+			pwm-in-gpios = <&gpio_prt6 4 GPIO_ACTIVE_HIGH>;
+		};
+	};
+};

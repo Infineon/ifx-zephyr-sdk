@@ -1,0 +1,123 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Clock dividers for TCPWM test peripherals
+ */
+
+&peri_clk_div6 {
+	status = "okay";
+	clock-div = <1>;
+	/* Counter test: divider 6 -> TCPWM counter 2, no prescale */
+};
+
+&peri_clk_div7 {
+	status = "okay";
+	clock-div = <1>;
+	/* PWM gatekill test: divider 7 -> TCPWM PWM 4, no prescale */
+};
+
+&peri_clk_div8 {
+	status = "okay";
+	clock-div = <1>;
+	/* PWM test: divider 8 -> TCPWM PWM 3 */
+};
+
+/*
+ * Enable TCPWM instances and assign clock dividers
+ */
+
+&tcpwm0_2 {
+	status = "okay";
+};
+
+&counter0_2 {
+	status = "okay";
+	clocks = <&peri_clk_div6>;
+};
+
+&tcpwm0_4 {
+	status = "okay";
+};
+
+&pwm0_4 {
+	status = "okay";
+	clocks = <&peri_clk_div7>;
+	pinctrl-0 = <&p2_4_pwm0_4>;
+	pinctrl-names = "default";
+};
+
+&tcpwm0_3 {
+	status = "okay";
+};
+
+&pwm0_3 {
+	compatible = "infineon,tcpwm-pwm";
+	status = "okay";
+	clocks = <&peri_clk_div8>;
+	pinctrl-0 = <&p2_2_pwm0_3>;
+	pinctrl-names = "default";
+};
+
+&p2_2_pwm0_3 {
+	status = "okay";
+	drive-push-pull;
+};
+
+&gpio_prt2 {
+	status = "okay";
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		/*
+		 * PWM test to check the duty cycle is achieved in o/p
+		 */
+		pwm_test: tcpwm_pwm_test {
+			tcpwm = <&pwm0_3>;
+			pwm-mode = <4>;
+			tcpwm-clock-prescaler = <0>;
+			pwm-alignment = <0>;
+			tcpwm-run-mode = <0>;
+			pwm-period0 = <32768>;
+			pwm-period1 = <32768>;
+			pwm-compare0 = <16384>;
+			pwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <1>;
+			pwm-kill-mode = <2>;
+			pwm-in-gpios = <&gpio_prt2 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		/*
+		 * Counter self-test: TCPWM counter 2 verifies correct
+		 * counting and compare-match interrupt generation.
+		 *
+		 * Clock: counter0_2 -> peri_clk_div6 (assigned above)
+		 * IRQ: inherited from parent tcpwm0_2 (IRQ 18)
+		 */
+		counter_test: tcpwm_cnt_test {
+			tcpwm = <&counter0_2>;
+			tcpwm-period = <32768>;
+			tcpwm-compare0 = <16384>;
+			tcpwm-compare1 = <16384>;
+			tcpwm-interrupt-sources = <2>;
+		};
+
+		/*
+		 * PWM gate/kill test: TCPWM PWM 4 verifies that the
+		 * kill mechanism correctly stops PWM output.
+		 *
+		 * Clock: pwm0_4 -> peri_clk_div7 (assigned above)
+		 */
+		pwm_gatekill_test: tcpwm_pwm_gk_test {
+			tcpwm = <&pwm0_4>;
+		};
+	};
+};
