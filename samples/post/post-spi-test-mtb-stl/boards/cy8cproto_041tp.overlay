@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) 2025 Infineon Technologies AG,
+ * or an affiliate of Infineon Technologies AG.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Example: SPI Application — SCB portion only
+ *
+ * Board uses SCB1 as SPI master to an external sensor or flash.
+ * STL tests the same SCB1 the application depends on.
+ */
+
+/* Board-level pinctrl for SPI */
+&p1_5_scb1_spi_m_mosi {
+	drive-push-pull;
+};
+
+&p1_6_scb1_spi_m_miso {
+	input-enable;
+};
+
+&p1_7_scb1_spi_m_clk {
+	drive-push-pull;
+};
+
+&p1_3_scb1_spi_m_select0 {
+	drive-push-pull;
+};
+
+/* Application: SCB1 as SPI master */
+spi1: &scb1 {
+	compatible = "infineon,spi";
+	status = "okay";
+	pinctrl-0 = <&p1_5_scb1_spi_m_mosi &p1_6_scb1_spi_m_miso
+			&p1_7_scb1_spi_m_clk &p1_3_scb1_spi_m_select0>;
+	pinctrl-names = "default";
+	clocks = <&peri_clk_div1>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		/* ... DMA, TCPWM, and PWM test nodes omitted ... */
+
+		/*
+		 * SPI internal loopback
+		 * C code detects "infineon,spi" on &scb1 -> SelfTest_SPI_SCB().
+		 * Clock inherited from scb1's existing clocks property.
+		 */
+		 spi_loopback_test: scb_test {
+			scb = <&scb1>;
+			spi-sub-mode = <0>;
+			spi-sclk-mode = <0>;
+			spi-oversample = <16>;
+			spi-rx-data-width = <8>;
+			spi-tx-data-width = <8>;
+			spi-msb-first;
+		 };
+	};
+};

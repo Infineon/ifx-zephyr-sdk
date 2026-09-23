@@ -1,0 +1,63 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Board Requirements (connections on the J5 expansion header):
+ * - SPI Loop Back Test: connect J5.14 (P7.1, MOSI) -> J5.20 (P7.2, MISO)
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/* SPI internal loopback self test: scb2 as SPI master */
+&scb2 {
+	compatible = "infineon,spi";
+	status = "okay";
+	clocks = <&peri0_group4_16bit_0>;
+	pinctrl-0 = <&p7_1_scb2_spi_m_mosi &p7_2_scb2_spi_m_miso
+			&p7_0_scb2_spi_m_clk &p7_3_scb2_spi_m_select0>;
+	pinctrl-names = "default";
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+&p7_1_scb2_spi_m_mosi {
+	drive-push-pull;
+};
+
+&p7_2_scb2_spi_m_miso {
+	input-enable;
+};
+
+&p7_0_scb2_spi_m_clk {
+	drive-push-pull;
+};
+
+&p7_3_scb2_spi_m_select0 {
+	drive-push-pull;
+};
+
+&peri0_group4_16bit_0 {
+	status = "okay";
+	clock-div = <4>;
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		spi_loopback_test: scb_test {
+			scb = <&scb2>;
+			spi-sub-mode = <0>;
+			spi-sclk-mode = <0>;
+			spi-oversample = <16>;
+			spi-rx-data-width = <8>;
+			spi-tx-data-width = <8>;
+			spi-msb-first;
+		};
+	};
+};

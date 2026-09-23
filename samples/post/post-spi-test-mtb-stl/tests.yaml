@@ -1,0 +1,23 @@
+sample:
+  name: POST SPI MTB-STL Sample
+  description: Demonstrates POST with MTB-STL SPI loopback tests
+
+common:
+  tags:
+    - post
+    - self-test
+    - mtb-stl
+  platform_allow:
+    - cy8cproto_041tp
+    - kit_psc3m5_evk
+  integration_platforms:
+    - cy8cproto_041tp
+    - kit_psc3m5_evk
+
+tests:
+  sample.post.mtb_stl.spi:
+    harness: console
+    harness_config:
+      type: one_line
+      regex:
+        - "POST summary: [1-9][0-9]* passed, 0 failed, 0 skipped$"
