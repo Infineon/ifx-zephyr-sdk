@@ -1,0 +1,29 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Uses LPCOMP0 channel 0 with both inputs on GPIO:
+ *   positive input (V+) = P8.0 (J5.19)
+ *   negative input (V-) = P8.1 (J5.13)
+ */
+
+&gpio_prt8 {
+	status = "okay";
+};
+
+&lpcomp0 {
+	status = "okay";
+};
+
+&lpcomp0_0 {
+	status = "okay";
+	output-mode = "direct";
+	power = "normal";
+	hysteresis;
+	input-p = "gpio";
+	input-n = "gpio";
+};
