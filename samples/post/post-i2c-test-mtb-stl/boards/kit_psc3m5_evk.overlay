@@ -1,0 +1,102 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Board Requirements:
+ * - I2C master-slave test: wire the two SCBs onto one bus and fit bus
+ *   pull-ups (typ. 2.2 kOhm - 4.7 kOhm to VDDD) if the chosen header pins do
+ *   not already have them (all connections on the J5 expansion header):
+ *     connect master SCL (P7.0, J5.18) <-> slave SCL (P8.1, J5.13)
+ *     connect master SDA (P7.1, J5.14) <-> slave SDA (P8.3, J5.17)
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/* Both I2C drivers remain deferred until POST passes and cleans up. */
+/* Application: scb2 as I2C master - this is the device under test */
+i2c2: &scb2 {
+	compatible = "infineon,i2c";
+	status = "okay";
+	zephyr,deferred-init;
+	clock-frequency = <100000>;
+	clocks = <&peri0_group4_16bit_0>;
+	pinctrl-0 = <&p7_0_scb2_i2c_scl &p7_1_scb2_i2c_sda>;
+	pinctrl-names = "default";
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+/* Test fixture: scb5 as I2C slave, wired to scb2's bus */
+i2c5: &scb5 {
+	compatible = "infineon,i2c";
+	status = "okay";
+	zephyr,deferred-init;
+	clock-frequency = <100000>;
+	clocks = <&peri0_group6_16_5bit_0>;
+	pinctrl-0 = <&p8_1_scb5_i2c_scl &p8_3_scb5_i2c_sda>;
+	pinctrl-names = "default";
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+&p7_0_scb2_i2c_scl {
+	bias-pull-up;
+	input-enable;
+};
+
+&p7_1_scb2_i2c_sda {
+	bias-pull-up;
+	input-enable;
+};
+
+&p8_1_scb5_i2c_scl {
+	bias-pull-up;
+	input-enable;
+};
+
+&p8_3_scb5_i2c_sda {
+	bias-pull-up;
+	input-enable;
+};
+
+/* Boot clock setup supplies 2 MHz before either deferred I2C driver runs. */
+&peri0_group4_16bit_0 {
+	status = "okay";
+	clock-div = <40>; /* Board-configured HF2: 80 MHz / 40. */
+};
+
+&peri0_group6_16_5bit_0 {
+	status = "okay";
+	clock-div = <40>; /* HF4: 80 MHz / 40. */
+};
+
+/* SCB5 uses HF4; select 240 MHz / 3. HF2 is configured in the board DTS. */
+&clk_hf4 {
+	source-path = <IFX_CLK_HF_IN_CLKPATH2>;
+	clock-div = <IFX_CLK_HF_DIVIDE_BY_3>;
+	status = "okay";
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		i2c_test: scb_test {
+			scb = <&scb2>;
+			scb-slave = <&scb5>;
+			i2c-test-slave-addrs = <8>;
+			i2c-test-slave-addrs-mask = <254>;
+			i2c-master-lp-duty-cycle = <16>;
+			i2c-master-hp-duty-cycle = <16>;
+			i2c-slave-use-rxfifo;
+			i2c-slave-use-txfifo;
+			i2c-master-use-rxfifo;
+			i2c-master-use-txfifo;
+		};
+	};
+};

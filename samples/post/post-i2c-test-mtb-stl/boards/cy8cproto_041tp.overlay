@@ -1,0 +1,130 @@
+/*
+ * Copyright (c) 2025 Infineon Technologies AG,
+ * or an affiliate of Infineon Technologies AG.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+uart3: &scb3 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri_clk_div8>;
+	pinctrl-0 = <&p2_5_scb3_uart_tx &p2_4_scb3_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&peri_clk_div8 {
+	status = "okay";
+};
+
+&p2_5_scb3_uart_tx {
+	drive-push-pull;
+};
+
+&p2_4_scb3_uart_rx {
+	input-enable;
+};
+
+&gpio_prt2 {
+	status = "okay";
+};
+
+/ {
+	chosen {
+		zephyr,console = &uart3;
+		zephyr,shell-uart = &uart3;
+	};
+};
+
+/* Board-level pinctrl: I2C drive modes for SCB1 (application master) */
+&p6_3_scb1_i2c_scl {
+	drive-open-drain;
+	input-enable;
+};
+
+&p6_4_scb1_i2c_sda {
+	drive-open-drain;
+	input-enable;
+};
+
+/* Board-level pinctrl: I2C drive modes for SCB0 (test slave fixture) */
+&p2_0_scb0_i2c_scl {
+	drive-open-drain;
+	input-enable;
+};
+
+&p2_1_scb0_i2c_sda {
+	drive-open-drain;
+	input-enable;
+};
+
+/* Application: SCB1 as I2C master — this is the device under test */
+i2c1: &scb1 {
+	compatible = "infineon,i2c";
+	status = "okay";
+	/* Start the normal driver only after PASS and cleanup. */
+	zephyr,deferred-init;
+	pinctrl-0 = <&p6_3_scb1_i2c_scl &p6_4_scb1_i2c_sda>;
+	pinctrl-names = "default";
+	clock-frequency = <100000>;
+	clocks = <&peri_clk_div1>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+/*
+ * Test fixture: SCB0 as I2C slave, wired to SCB1's bus.
+ * Its normal Zephyr driver is initialized only after POST passes.
+ * Both clock dividers initialize at boot: 48 MHz / 24 = 2 MHz for POST.
+ */
+&peri_clk_div9 {
+	status = "okay";
+	clock-div = <24>;
+};
+
+&peri_clk_div1 {
+	status = "okay";
+	clock-div = <24>;
+};
+
+i2c0: &scb0 {
+	/delete-property/ current-speed;
+
+	compatible = "infineon,i2c";
+	status = "okay";
+	zephyr,deferred-init;
+	pinctrl-0 = <&p2_0_scb0_i2c_scl &p2_1_scb0_i2c_sda>;
+	pinctrl-names = "default";
+	clock-frequency = <100000>;
+	clocks = <&peri_clk_div9>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		/*
+		 * I2C master-slave test.
+		 * DUT: &scb1 (app's I2C master)
+		 * Fixture: &scb0 (slave, wired to same bus)
+		 *
+		 * SelfTest_I2C_SCB(master_base, ..., slave_base, ...).
+		 */
+		i2c_test: scb_test {
+			scb = <&scb1>;
+			scb-slave = <&scb0>;
+			i2c-test-slave-addrs = <8>;
+			i2c-test-slave-addrs-mask = <254>;
+			i2c-master-lp-duty-cycle = <16>;
+			i2c-master-hp-duty-cycle = <16>;
+			i2c-slave-use-rxfifo;
+			i2c-slave-use-txfifo;
+			i2c-master-use-rxfifo;
+			i2c-master-use-txfifo;
+		};
+	};
+};
