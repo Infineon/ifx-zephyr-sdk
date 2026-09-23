@@ -1,0 +1,112 @@
+/*
+ * Copyright (c) 2025 Infineon Technologies AG,
+ * or an affiliate of Infineon Technologies AG.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Board Requirements:
+ * - UART Loop Back Test (connect p2.0 -> p2.1)
+ * - UART Communication Test (connect p4.0 -> p2.5 & p4.1 -> p2.4)
+ */
+
+/* Uart Communication Data transfer self test */
+
+/* Master UART communication test */
+&scb4 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri_clk_div9>;
+	pinctrl-0 = <&p4_1_scb4_uart_tx &p4_0_scb4_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&p4_1_scb4_uart_tx {
+	drive-push-pull;
+};
+
+&p4_0_scb4_uart_rx {
+	input-enable;
+};
+
+&peri_clk_div9 {
+	status = "okay";
+};
+
+/* Slave UART communication test */
+&scb3 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri_clk_div8>;
+	pinctrl-0 = <&p2_5_scb3_uart_tx &p2_4_scb3_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&p2_5_scb3_uart_tx {
+	drive-push-pull;
+};
+
+&p2_4_scb3_uart_rx {
+	input-enable;
+};
+
+&peri_clk_div8 {
+	status = "okay";
+};
+
+/* Timer UART communication test*/
+&tcpwm0_3 {
+	status = "okay";
+};
+
+&counter0_3 {
+	status = "okay";
+	clocks = <&peri_clk_div10>;
+};
+
+&peri_clk_div10 {
+	status = "okay";
+	clock-div = <48000>;
+};
+
+/* UART Loop Back self test */
+&scb2 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri_clk_div11>;
+	pinctrl-0 = <&p2_1_scb2_uart_tx &p2_0_scb2_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&p2_1_scb2_uart_tx {
+	drive-push-pull;
+};
+
+&p2_0_scb2_uart_rx {
+	input-enable;
+};
+
+&peri_clk_div11 {
+	status = "okay";
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		uart_communication_test: uart_communication_test {
+			scb = <&scb4>;
+			scb-slave = <&scb3>;
+			tcpwm = <&counter0_3>;
+		};
+
+		uart_loopback_test: scb_test_uart_lp {
+			scb = <&scb2>;
+		};
+	};
+};

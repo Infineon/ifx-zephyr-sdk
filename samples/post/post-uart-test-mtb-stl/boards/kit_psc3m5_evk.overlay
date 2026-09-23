@@ -1,0 +1,120 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+ * SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * Board Requirements (all connections on the J5 expansion header):
+ * - UART Loop Back Test:     connect J5.29 (P3.3, TX) -> J5.31 (P3.2, RX)
+ * - UART Communication Test: connect J5.14 (P7.1, master TX) -> J5.13 (P8.1, slave RX)
+ *                            connect J5.17 (P8.3, slave TX)  -> J5.20 (P7.2, master RX)
+ *
+ * scb1 is the SWD debug port and scb3 is the console UART.
+ */
+
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/* UART Communication data transfer self test */
+
+/* Master UART communication test */
+&scb2 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri0_group4_16bit_0>;
+	pinctrl-0 = <&p7_1_scb2_uart_tx &p7_2_scb2_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&p7_1_scb2_uart_tx {
+	drive-push-pull;
+};
+
+&p7_2_scb2_uart_rx {
+	input-enable;
+};
+
+&peri0_group4_16bit_0 {
+	status = "okay";
+	clock-div = <86>;
+};
+
+/* Slave UART communication test */
+&scb5 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri0_group6_16_5bit_0>;
+	pinctrl-0 = <&p8_3_scb5_uart_tx &p8_1_scb5_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&p8_3_scb5_uart_tx {
+	drive-push-pull;
+};
+
+&p8_1_scb5_uart_rx {
+	input-enable;
+};
+
+&peri0_group6_16_5bit_0 {
+	status = "okay";
+	clock-div = <86>;
+};
+
+/* Timer UART communication test */
+&tcpwm0_3 {
+	status = "okay";
+};
+
+&counter0_3 {
+	status = "okay";
+	clocks = <&peri0_group5_16bit_0>;
+};
+
+&peri0_group5_16bit_0 {
+	status = "okay";
+	clock-div = <48000>;
+};
+
+/* UART Loop Back self test */
+&scb4 {
+	compatible = "infineon,uart";
+	status = "okay";
+	current-speed = <115200>;
+	clocks = <&peri0_group4_8bit_1>;
+	pinctrl-0 = <&p3_3_scb4_uart_tx &p3_2_scb4_uart_rx>;
+	pinctrl-names = "default";
+};
+
+&p3_3_scb4_uart_tx {
+	drive-push-pull;
+};
+
+&p3_2_scb4_uart_rx {
+	input-enable;
+};
+
+&peri0_group4_8bit_1 {
+	status = "okay";
+	clock-div = <86>;
+};
+
+/ {
+	mtb_stl: mtb_stl {
+		compatible = "infineon,mtb-stl";
+		status = "okay";
+
+		uart_communication_test: uart_communication_test {
+			scb = <&scb2>;
+			scb-slave = <&scb5>;
+			tcpwm = <&counter0_3>;
+		};
+
+		uart_loopback_test: scb_test_uart_lp {
+			scb = <&scb4>;
+		};
+	};
+};
