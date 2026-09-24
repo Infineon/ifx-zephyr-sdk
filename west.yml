@@ -25,6 +25,8 @@ manifest:
         name-allowlist:
           - cmsis_6
           - mbedtls
+          - mbedtls-3.6
+          - tf-psa-crypto
           - trusted-firmware-m
           - zcbor
 
@@ -64,3 +66,12 @@ manifest:
       path: modules/hal/infineon
       groups:
         - hal
+
+    # -----------------------------------------------------------------------
+    # emUSB device support for Infineon boards.
+    # -----------------------------------------------------------------------
+    - name: emusb-device
+      remote: infineon-github
+      repo-path: emusb-device
+      revision: 75f865d1514e7bde3efac8131b31dc4e5de2a5bd # release-v2.2.1
+      path: modules/hal/infineon/emusb-device
