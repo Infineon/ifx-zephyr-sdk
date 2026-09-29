@@ -18,7 +18,7 @@ manifest:
     - name: ifx-zephyr
       remote: infineon-github
       repo-path: ifx-zephyr
-      revision: ac9878ff41c315f98562559498c388c0c17b0651
+      revision: 5a9db6198d786edc3ef88c47bb41cb7cb33e9909
       import:
         # By using name-allowlist we can clone only the modules that are
         # strictly needed by the application.
@@ -30,6 +30,8 @@ manifest:
           - mcuboot
           - tf-psa-crypto
           - zcbor
+          - littlefs
+          - fatfs
 
     - name: lvgl
       remote: lvgl
@@ -45,7 +47,7 @@ manifest:
     - name: hal_infineon
       remote: infineon-github
       repo-path: ifx-zephyr-hal_infineon
-      revision: e230fdd133dfe56307075573d86f2f8a14b71ec6
+      revision: 2a16709f98f47a7a823162c5731d6b4f63a7da72
       path: modules/hal/infineon
 
     # -----------------------------------------------------------------------
