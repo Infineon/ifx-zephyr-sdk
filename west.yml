@@ -17,7 +17,7 @@ manifest:
   projects:
     - name: ifx-zephyr
       remote: infineon-github
-      revision: main
+      revision: 47b72d198ae791edffa7b93c551621ef777729e0
       clone-depth: 1
       import:
         # By using name-allowlist we can clone only the modules that are
@@ -60,7 +60,7 @@ manifest:
     - name: hal_infineon
       remote: infineon-github
       repo-path: ifx-zephyr-hal_infineon
-      revision: master
+      revision: bed4cee5aa5602cb23e7f6c3c94f3bab5ecbe186
       path: modules/hal/infineon
       groups:
         - hal
