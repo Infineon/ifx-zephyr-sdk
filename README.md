@@ -78,6 +78,56 @@ All `west build` commands are run from the workspace root (`workspace\`).
 All samples live under `ifx-zephyr-sdk\samples\`. Run `west build` commands from the workspace
 root (`workspace\`).
 
+### emusb/vendor_bulk
+Demonstrates a high-speed USB vendor-class (`0xFF`) bulk device on the PSE84 USBHS controller
+using the SEGGER emUSB-Device stack (Infineon precompiled library, fetched by `west update` as the
+`emusb-device` module). Zephyr's native USB stack is disabled; emUSB owns the controller and uses
+the DMA driver for bulk throughput.
+
+The device enumerates as VID `0x2FE3` / PID `0x000A` (Zephyr test IDs - do not ship) with one
+interface containing a bulk OUT (`0x01`) and a bulk IN (`0x81`) endpoint. The data path mode is
+selected at build time:
+
+| Kconfig option                       | Device behavior                                   | Host test (`--mode`) |
+|--------------------------------------|---------------------------------------------------|----------------------|
+| `CONFIG_APP_VENDOR_BULK_MODE_SOURCE` | Streams a counter pattern on bulk IN (default)    | `in` or `in-async`   |
+| `CONFIG_APP_VENDOR_BULK_MODE_SINK`   | Reads and discards bulk OUT                       | `out`                |
+| `CONFIG_APP_VENDOR_BULK_MODE_LOOPBACK` | Echoes bulk OUT back on bulk IN                 | Not currently supported |
+
+Other options: `CONFIG_APP_VENDOR_BULK_XFER_SIZE` (per-transfer size, default 65536 bytes) and
+`CONFIG_APP_VENDOR_BULK_STATS` (prints device-side MiB/s once per second in source/sink mode).
+
+Supported targets: `kit_pse84_eval/pse846gps2dbzc4a/m55` and
+`kit_pse84_eval/pse846gps2dbzc4a/m33/ns`.
+
+**Build and flash** (default source mode, M55):
+```bat
+west build -p -b kit_pse84_eval/pse846gps2dbzc4a/m55 ifx-zephyr-sdk\samples\emusb\vendor_bulk --sysbuild
+west flash
+```
+
+To select a different mode, override the Kconfig choice on the command line, e.g. sink mode:
+```bat
+west build -p -b kit_pse84_eval/pse846gps2dbzc4a/m55 ifx-zephyr-sdk\samples\emusb\vendor_bulk --sysbuild -- -DCONFIG_APP_VENDOR_BULK_MODE_SINK=y
+```
+
+Connect the kit's USB device port to the host. The console prints
+`PSE84 emUSB-Device: vendor bulk sample (<mode> mode)`, then `vendor bulk ready` once the host
+configures the device, followed by throughput statistics if enabled.
+
+**Host throughput test**
+
+`vendor_bulk_speed_test.py` (in the sample directory) measures bulk throughput from the host.
+On Windows, first use [Zadig](https://zadig.akeo.ie) to bind WinUSB to interface 0 of the device.
+On Linux, run with sufficient permissions for the USB device (e.g. a udev rule).
+```bat
+pip install pyusb libusb-package
+python ifx-zephyr-sdk\samples\emusb\vendor_bulk\vendor_bulk_speed_test.py --mode in
+```
+Use `--mode in-async` (requires `pip install libusb1`) for a pipelined IN test that keeps
+multiple transfers in flight, or `--mode out` against a sink-mode build. Run with `--help` for
+options such as `--xfer`, `--seconds`, and `--queue`.
+
 ### lvgl-7in
 A clone of `samples/subsys/display/lvgl` with a board overlay for the PSE84 Eval Kit's 7″
 Waveshare display module instead of the standard 4.3″ module.
