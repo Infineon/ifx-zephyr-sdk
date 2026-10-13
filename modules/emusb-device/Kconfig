@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+# SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# SEGGER emUSB-Device integration for Zephyr
+
+# Hidden symbol set automatically when this module is present, so that other
+# Kconfig/CMake logic can detect emUSB-Device availability.
+config ZEPHYR_EMUSB_DEVICE_MODULE
+	bool
+
+menuconfig EMUSB_DEVICE
+	bool "SEGGER emUSB-Device USB stack"
+	depends on DT_HAS_INFINEON_USBHS_ENABLED && SOC_SERIES_PSE84 && !UDC_DRIVER
+	help
+	  Link the SEGGER emUSB-Device stack (shipped by Infineon as a
+	  pre-compiled library plus headers) into the application. The
+	  application must provide the emUSB configuration sources
+	  (usbd_config.c / usbd_config_io.c, templates live under
+	  vendor modules/hal/infineon/emusb-device/export/Config directory)
+          and call USBD_Init() / USBD_Start().
+
+if EMUSB_DEVICE
+
+config EMUSB_DEVICE_CONFIG_PATH
+	string "Directory containing the application emUSB config headers"
+	default ""
+	help
+	  Absolute path of the directory that holds the application-provided
+	  emUSB configuration headers (e.g. USB_Conf.h). Added to the global
+	  include path so the emUSB headers can find them. Leave empty if the
+	  application already exposes them via zephyr_include_directories().
+
+config EMUSB_DEVICE_RTOS_AWARE
+	bool "Build the RTOS-aware OS abstraction layer"
+	default y
+	select USE_INFINEON_ABSTRACTION_RTOS
+	help
+	  Compile the emUSB OS abstraction (usbd_os_abs_rtos.c) with
+	  COMPONENT_RTOS_AWARE, routing emUSB OS primitives onto the Zephyr
+	  kernel through the Infineon abstraction-rtos layer. Disable only for
+	  a bare (no-RTOS) super-loop integration.
+
+config EMUSB_DEVICE_DMA
+	bool "Use the DMA USB device driver"
+	help
+	  Build the DMA-based emUSB glue (ifx_emusb_dma_configure): cache
+	  maintenance hooks (SCB clean/invalidate on Cortex-M55, no-ops on the
+	  cacheless Cortex-M33) and a DMA-address validator. The application
+	  must select USB_Driver_Infineon_PSOCE84_DMA and place all transfer
+	  buffers (the assigned memory pool and any USBD_BULK_Write/Read
+	  buffers) in DMA-reachable SRAM (and, on M55, in non-cacheable memory).
+	  Offloads the FIFO copy from the CPU for much higher bulk throughput.
+
+config EMUSB_DEVICE_USE_PDL
+	bool "Build the emUSB config/OS sources with USBD_USE_PDL=1"
+	default n
+	help
+	  Compile the application/OS emUSB sources with USBD_USE_PDL=1. The
+	  ModusToolbox reference (COMPONENTS=USBD_BASE) leaves this at 0, so it
+	  defaults to n here. Enabling it requires the application to disable
+	  the emUSB standard debug output (USBD_DISABLE_STANDARD_OUTPUT=1).
+
+config EMUSB_DEVICE_DEBUG_BUILD
+	bool "Link the Debug build of the emUSB library"
+	default n
+	help
+	  Link the CONFIG_Debug pre-compiled emUSB library variant (extra
+	  logging / asserts) instead of CONFIG_Release. Only affects which
+	  pre-built archive is selected.
+
+choice EMUSB_DEVICE_EMFILE
+	prompt "emFile (MSD) library variant"
+	default EMUSB_DEVICE_EMFILE_NONE
+	help
+	  Select whether to link the plain emUSB-Device base library or one of
+	  the emFile-enabled variants used by the Mass Storage Device class
+	  with a FAT file system.
+
+config EMUSB_DEVICE_EMFILE_NONE
+	bool "None (base library)"
+
+config EMUSB_DEVICE_EMFILE_FAT16
+	bool "emFile FAT16"
+
+config EMUSB_DEVICE_EMFILE_FAT32
+	bool "emFile FAT32"
+
+endchoice
+
+endif # EMUSB_DEVICE
