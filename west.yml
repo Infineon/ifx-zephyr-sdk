@@ -1,5 +1,5 @@
-# Copyright (c) 2026 Infineon Technologies AG,
-# or an affiliate of Infineon Technologies AG.
+# SPDX-FileCopyrightText: Copyright (c) 2026 Infineon Technologies AG,
+# SPDX-FileCopyrightText: or an affiliate of Infineon Technologies AG. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -17,7 +17,7 @@ manifest:
   projects:
     - name: ifx-zephyr
       remote: infineon-github
-      revision: 47b72d198ae791edffa7b93c551621ef777729e0
+      revision: e989541ec34fc7fde81dc9bdf504cdcce93e1463
       clone-depth: 1
       import:
         # By using name-allowlist we can clone only the modules that are
@@ -25,6 +25,9 @@ manifest:
         name-allowlist:
           - cmsis_6
           - mbedtls
+          - mbedtls-3.6
+          - mcuboot
+          - tf-psa-crypto
           - trusted-firmware-m
           - zcbor
 
@@ -60,7 +63,7 @@ manifest:
     - name: hal_infineon
       remote: infineon-github
       repo-path: ifx-zephyr-hal_infineon
-      revision: bed4cee5aa5602cb23e7f6c3c94f3bab5ecbe186
+      revision: 2191db4d7723737ffd3d59d01b50f7595dac2944
       path: modules/hal/infineon
       groups:
         - hal
