@@ -20,6 +20,23 @@ workspace\
 └── modules\                 ← all west-managed modules
 ```
 
+## Branch/Repo Structure
+
+Currently some features are not supported on the main branches of ifx-zephyr and 
+ifx-zephyr-hal_infineon. 
+
+Features supported on the main branches:
+- emusb-device
+
+Additional feature support status (by branch):
+- lvgl-7in and ml-middleware
+    - ifx-zephyr-sdk: topic/downstream-display-and-ml
+    - ifx-zephyr: topic/downstream-display
+    - ifx-zephyr-hal_infineon: topic/downstream-ml
+
+Running `west update` while on the topic/downstream-display-and-ml branch will fetch the correct 
+code revisions from ifx-zephyr and ifx-zephyr-hal_infineon.
+
 ## Prerequisites
 
 - Python 3.10+ (to create the virtual environment)
@@ -128,7 +145,7 @@ Use `--mode in-async` (requires `pip install libusb1`) for a pipelined IN test t
 multiple transfers in flight, or `--mode out` against a sink-mode build. Run with `--help` for
 options such as `--xfer`, `--seconds`, and `--queue`.
 
-### lvgl-7in
+### lvgl-7in*
 A clone of `samples/subsys/display/lvgl` with a board overlay for the PSE84 Eval Kit's 7″
 Waveshare display module instead of the standard 4.3″ module.
 ```bat
@@ -136,8 +153,10 @@ west build -p -b kit_pse84_eval/pse846gps2dbzc4a/m55 ifx-zephyr-sdk\samples\lvgl
 west flash
 ```
 
-### ml-middleware
+### ml-middleware*
 Demonstrates running a [DEEPCRAFT Studio](https://imagimob.com/deepcraft) model on Zephyr using
 the Infineon ML Middleware, targeting both the M33 + NNLite and M55 + Ethos-U55 configurations.
 See [samples/ml-middleware/README.md](samples/ml-middleware/README.md) for full build and usage
 details.
+
+### * - Currently not fully supported on the main branch of ifx-zephyr-sdk
