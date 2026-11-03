@@ -15,10 +15,11 @@ manifest:
       url-base: https://github.com/lvgl
 
   projects:
-    - name: ifx-zephyr
+    - name: zephyr
       remote: infineon-github
+      repo-path: ifx-zephyr
+      path: ifx-zephyr
       revision: e989541ec34fc7fde81dc9bdf504cdcce93e1463
-      clone-depth: 1
       import:
         # By using name-allowlist we can clone only the modules that are
         # strictly needed by the application.
