@@ -40,6 +40,7 @@ code revisions from ifx-zephyr and ifx-zephyr-hal_infineon.
 ## Prerequisites
 
 - Python 3.10+ (to create the virtual environment)
+- Git CLI
 - [Zephyr SDK](https://docs.zephyrproject.org/latest/develop/toolchains/zephyr_sdk.html) installed
 - Infineon OpenOCD: https://github.com/infineon/openocd/releases
 - See the Zephyr getting started guide for additional information:
@@ -94,6 +95,91 @@ All `west build` commands are run from the workspace root (`workspace\`).
 
 All samples live under `ifx-zephyr-sdk\samples\`. Run `west build` commands from the workspace
 root (`workspace\`).
+
+### MTB-STL POST tests
+
+The [POST samples](samples/post) use the `ifx-zephyr-stl` module for the generic
+POST framework and Infineon's MTB-STL adaptation. The following eight samples
+are included. Board names below refer to PSC3M5 (`kit_psc3m5_evk`) and PSoC4
+(`cy8cproto_041tp`); each sample's README describes its hardware setup and test
+limitations.
+
+| Sample | Tests | Board configurations |
+|--------|-------|----------------------|
+| [post-mtb-stl](samples/post/post-mtb-stl/README.rst) | CPU, RAM/stack/flash, GPIO, watchdog, interrupt, clock, DMA and startup registers; FPU on PSC3M5 | PSC3M5, PSoC4 |
+| [post-tcpwm-test-mtb-stl](samples/post/post-tcpwm-test-mtb-stl/README.rst) | Counter, PWM duty cycle and PWM gate/kill | PSC3M5, PSoC4 |
+| [post-i2c-test-mtb-stl](samples/post/post-i2c-test-mtb-stl/README.rst) | I2C master/slave communication | PSC3M5, PSoC4 |
+| [post-spi-test-mtb-stl](samples/post/post-spi-test-mtb-stl/README.rst) | SPI MOSI-to-MISO loopback | PSC3M5, PSoC4 |
+| [post-uart-test-mtb-stl](samples/post/post-uart-test-mtb-stl/README.rst) | UART loopback and master/slave communication | PSC3M5, PSoC4 |
+| [post-adc-test-mtb-stl](samples/post/post-adc-test-mtb-stl/README.rst) | ADC with internal stimulus on PSC3M5 or external input on PSoC4 | PSC3M5, PSoC4 |
+| [post-comparator-test-mtb-stl](samples/post/post-comparator-test-mtb-stl/README.rst) | LPCOMP output compared with the configured expected level | PSC3M5 |
+| [post-dac-test-mtb-stl](samples/post/post-dac-test-mtb-stl/README.rst) | DAC zero, midpoint and full-scale values measured through ADC | PSC3M5 |
+
+After completing workspace setup above, run the following from the workspace
+root with the Python environment activated:
+
+```bat
+west update
+west build -b kit_psc3m5_evk -d build-post-core ifx-zephyr-sdk/samples/post/post-mtb-stl
+```
+
+For the PSoC4 core sample, use a separate build directory:
+
+```bat
+west build -b cy8cproto_041tp -d build-post-core-psoc4 ifx-zephyr-sdk/samples/post/post-mtb-stl
+```
+
+Build any peripheral sample independently on PSC3M5:
+
+```bat
+west build -b kit_psc3m5_evk -d build-post-tcpwm ifx-zephyr-sdk/samples/post/post-tcpwm-test-mtb-stl
+west build -b kit_psc3m5_evk -d build-post-i2c ifx-zephyr-sdk/samples/post/post-i2c-test-mtb-stl
+west build -b kit_psc3m5_evk -d build-post-spi ifx-zephyr-sdk/samples/post/post-spi-test-mtb-stl
+west build -b kit_psc3m5_evk -d build-post-uart ifx-zephyr-sdk/samples/post/post-uart-test-mtb-stl
+west build -b kit_psc3m5_evk -d build-post-adc ifx-zephyr-sdk/samples/post/post-adc-test-mtb-stl
+west build -b kit_psc3m5_evk -d build-post-comparator ifx-zephyr-sdk/samples/post/post-comparator-test-mtb-stl
+west build -b kit_psc3m5_evk -d build-post-dac ifx-zephyr-sdk/samples/post/post-dac-test-mtb-stl
+```
+
+For peripheral samples with a PSoC4 board configuration in the table, replace
+`-b kit_psc3m5_evk` with `-b cy8cproto_041tp` and use a separate build directory,
+such as `-d build-post-i2c-psoc4`. Comparator and DAC samples only provide PSC3M5
+board configurations.
+
+The SDK manifest lists `ifx-zephyr-stl` for this integration. Its revision
+includes both the POST integration and the unchanged MTB-STL vendor assets
+under `modules/lib/ifx-zephyr-stl/mtb-stl/`. A single `west update` fetches both;
+no separate asset download command is needed. If only refreshing the STL
+project, `west update ifx-zephyr-stl` also includes its vendor files.
+Fetching this project requires access to the internal GitLab host configured
+in [west.yml](west.yml).
+
+`mtb-stl` is an ordinary directory inside the integration repository, not a
+submodule or separate west project. `west update mtb-stl` is not available.
+The asset updater is used only by maintainers preparing a vendor release
+update. Normal builds do not fetch or update assets.
+
+Read the [core sample instructions](samples/post/post-mtb-stl/README.rst) for
+startup-reference provisioning, reserved resources and result interpretation
+before running the tests. Peripheral samples under [samples/post](samples/post)
+document their own wiring and driver-handoff requirements. Successful asset
+verification or compilation does not replace hardware validation.
+
+After completing the selected sample's hardware setup (and startup-reference
+provisioning for the core sample), flash its build directory, for example:
+
+```bat
+west flash -d build-post-core
+```
+
+For a peripheral sample, select its corresponding directory, such as
+`west flash -d build-post-i2c`. Connect the serial console before reset to
+capture boot POST results.
+
+See the [adaptation contracts](../modules/lib/ifx-zephyr-stl/zephyr-adaptation-layer/README.rst)
+for test coverage and resource ownership, and the
+[asset-maintenance guide](../modules/lib/ifx-zephyr-stl/scripts/README.md) for
+vendor release updates. Cross-repository links assume the workspace layout above.
 
 ### emusb/vendor_bulk
 Demonstrates a high-speed USB vendor-class (`0xFF`) bulk device on the PSE84 USBHS controller
