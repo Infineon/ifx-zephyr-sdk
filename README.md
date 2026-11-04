@@ -96,6 +96,15 @@ All `west build` commands are run from the workspace root (`workspace\`).
 All samples live under `ifx-zephyr-sdk\samples\`. Run `west build` commands from the workspace
 root (`workspace\`).
 
+| Sample | Description |
+|--------|-------------|
+| [MTB-STL POST tests](#mtb-stl-post-tests) | Eight power-on self-test samples running Infineon MTB-STL safety tests on PSC3M5 and PSoC4 |
+| [emusb/vendor_bulk](#emusbvendor_bulk) | High-speed USB vendor-class bulk device on PSE84 using SEGGER emUSB-Device |
+| [lvgl-7in](#lvgl-7in)\* | LVGL display sample for the PSE84 Eval Kit's 7″ Waveshare display |
+| [ml-middleware](#ml-middleware)\* | DEEPCRAFT Studio model on PSE84 through the Infineon ML Middleware (NNLite or Ethos-U55) |
+
+\* Currently not fully supported on the main branch of ifx-zephyr-sdk.
+
 ### MTB-STL POST tests
 
 The [POST samples](samples/post) use the `ifx-zephyr-stl` module for the generic
